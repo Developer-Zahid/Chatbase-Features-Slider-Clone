@@ -60,60 +60,93 @@ img {
 .tf-slider {
     --_animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
 
+    @media screen and (max-width: 767px) {
+        display: grid;
+    }
+
     .tf-slider_tabs {
-        --swiper-pagination-top: 0;
-        --swiper-pagination-bottom: 0;
-        --swiper-pagination-bullet-size: auto;
-        --swiper-pagination-bullet-horizontal-gap: 0;
-        --swiper-pagination-bullet-inactive-opacity: 1;
-        --swiper-pagination-bullet-border-radius: 0;
-        --_indicator-color: #fff;
-        --_indicator-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+        @media screen and (max-width: 767px) {
+            display: grid;
+            grid-template-areas: 'center';
+            overflow: hidden;
+        }
 
+        @media screen and (min-width: 768px) {
+            --swiper-pagination-top: 0;
+            --swiper-pagination-bottom: 0;
+            --swiper-pagination-bullet-size: auto;
+            --swiper-pagination-bullet-horizontal-gap: 0;
+            --swiper-pagination-bullet-inactive-opacity: 1;
+            --swiper-pagination-bullet-border-radius: 0;
+            --_indicator-color: #fff;
+            --_indicator-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
 
-        display: flex;
-        justify-content: center;
-        padding-inline: 2rem;
-        position: relative;
+            display: flex;
+            justify-content: center;
+            padding-inline: 2rem;
+            position: relative;
 
-        &::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            transform: translateX(var(--_indicator-position-left, 0px));
-            background-color: var(--_indicator-color);
-            border-radius: 5em;
-            width: var(--_indicator-width, 300px);
-            height: 4px;
-            will-change: width, transform;
-            transition:
-                width var(--_animation-duration) var(--_indicator-timing-function),
-                transform var(--_animation-duration) var(--_indicator-timing-function);
+            &::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                transform: translateX(var(--_indicator-position-left, 0px));
+                background-color: var(--_indicator-color);
+                border-radius: 5em;
+                width: var(--_indicator-width, 300px);
+                height: 4px;
+                will-change: width, transform;
+                transition:
+                    width var(--_animation-duration) var(--_indicator-timing-function),
+                    transform var(--_animation-duration) var(--_indicator-timing-function);
+            }
         }
 
         .tf-slider_tabs_btn {
-            --_color: #a1a1aa;
-
-            flex-grow: 1;
-            flex-basis: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            padding: 1rem 2rem;
-            font-size: 1rem;
+            font-size: clamp(.875rem, .2086vw + .8124rem, 1rem);
             line-height: 1.25rem;
             font-weight: 500;
             font-family: var(--font-primary);
             border: 0;
             background-color: transparent;
-            cursor: pointer;
             color: var(--_color);
-            transition: color 0.3s ease;
+            padding-inline: 2rem;
 
-            &:is(:hover, :focus-visible, .swiper-pagination-bullet-active) {
-                --_color: #fff;
+            @media screen and (max-width: 767px) {
+                --_color: #ffffff;
+                grid-area: center;
+                padding-block: 2rem;
+                transition-property: transform, opacity;
+                transition-duration: calc(var(--_animation-duration) / 2);
+                transition-timing-function: var(--_animation-timing-function);
+                
+                &:not(.active) {
+                    transform: scale(0.8);
+                    opacity: 0;
+                }
+        
+                &.active {
+                    transition-delay: calc(var(--_animation-duration) / 1.5);
+                }
+            }
+
+            @media screen and (min-width: 768px) {
+                --_color: #a1a1aa;
+    
+                flex-grow: 1;
+                flex-basis: 0;
+                padding-block: 1rem;
+                cursor: pointer;
+                transition: color 0.3s ease;
+    
+                &:is(:hover, :focus-visible, .swiper-pagination-bullet-active) {
+                    --_color: #fff;
+                }
             }
         }
 
@@ -129,26 +162,61 @@ img {
         background-position: center;
         padding: clamp(1rem, 2.5026vw + .2492rem, 2.5rem) clamp(1rem, 6.6736vw + -1.0021rem, 5rem);
         border-radius: clamp(.75rem, .8342vw + .4997rem, 1.25rem);
+
+        @media screen and (max-width: 767px) {
+            min-width: 0;
+            width: 100%;
+            order: -1;
+        }
     }
 
     .tf-slider_wrapper {
-        display: grid;
-        grid-template-areas: 'center';
+        @media screen and (min-width: 768px) {
+            display: grid;
+            grid-template-areas: 'center';
+        }
     }
 
     .tf-slider_slide {
-        grid-area: center;
-        transform: scale(0.8);
-        opacity: 0;
-        
-        &:not(.swiper-slide-active) {
-            animation: slideOut calc(var(--_animation-duration) / 2) var(--_animation-timing-function) forwards;
-        }
+        width: 100% !important;
 
-        &.swiper-slide-active {
-            animation: slideIn calc(var(--_animation-duration) / 2) calc(var(--_animation-duration) / 1.5) var(--_animation-timing-function) forwards;
+        @media screen and (min-width: 768px) {
+            grid-area: center;
+            transform: scale(0.8);
+            opacity: 0;
+            
+            &:not(.swiper-slide-active) {
+                animation: slideOut calc(var(--_animation-duration) / 2) var(--_animation-timing-function) forwards;
+            }
+    
+            &.swiper-slide-active {
+                animation: slideIn calc(var(--_animation-duration) / 2) calc(var(--_animation-duration) / 1.5) var(--_animation-timing-function) forwards;
+            }
         }
     }
+
+    @media screen and (max-width: 767px) {
+        .tf-slider_pagination {
+            --swiper-pagination-bullet-inactive-color: #27272a;
+            --swiper-theme-color: #fff;
+            --swiper-pagination-bullet-inactive-opacity: 1;
+            --swiper-pagination-bullet-width: auto;
+            --swiper-pagination-bullet-height: 4px;
+            --swiper-pagination-bullet-border-radius: 50em;
+    
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* margin-block-start: 1.5rem; */
+            
+            .swiper-pagination-bullet {
+                flex-grow: 1;
+                flex-basis: 0;
+                transition: background-color 0.3s ease;
+            }
+        }
+    }
+
 }
 
 .tf-card {
@@ -157,7 +225,11 @@ img {
     border: 0.3rem solid var(--color-card-border);
     border-radius: clamp(1rem, 1.6684vw + .4995rem, 2rem);
     box-shadow: 0 1.5rem 2rem rgba(0, 0, 0, 0.3);
-    padding-top: 60%;
+    padding-top: 65%;
+    
+    @media screen and (min-width: 768px) {
+        padding-top: 60%;
+    }
 
     .tf-card_image {
         position: absolute;

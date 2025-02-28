@@ -11,49 +11,80 @@ $('[data-swiper="wrapper"]').each(function() {
     const $currentSliderElement = $(this).find('[data-swiper="Features-Slider"]');
     const $currentSliderTabsElement = $(this).find('[data-swiper="tabs"]');
     const $currentSliderTabsButtonElement = $currentSliderTabsElement.find('[data-swiper="tabs-btn"]');
-
-    function indicatorUpdate(swiper){
-        const tabsElementInfo = $currentSliderTabsElement.get(0).getBoundingClientRect();
-        const activeTabButtonInfo = swiper.pagination.bullets[swiper.realIndex].getBoundingClientRect();
-        $currentSliderTabsElement.css("--_indicator-width", `${activeTabButtonInfo.width}px`);
-        $currentSliderTabsElement.css("--_indicator-position-left", `${activeTabButtonInfo.left - tabsElementInfo.left }px`);
-    };
-
-    new Swiper($currentSliderElement.get(0), {
+    const $currentSliderPaginationElement = $(this).find('[data-swiper="pagination"]');
+    const sliderCommonOptions = {
         speed: 500,
-        virtualTranslate: true,
         rewind: true,
+        autoplay: {
+            delay: 5000,
+            disableOnInteraction: false,
+        },
         keyboard: {
             enabled: true,
             onlyInViewport: true,
         },
-        pagination: {
-            clickable: true,
-            el: $currentSliderTabsElement.get(0),
-            renderBullet: (bulletIndex, className)=> {
-                $currentSliderTabsButtonElement.eq(bulletIndex).addClass(className);
-                return $currentSliderTabsButtonElement[bulletIndex].outerHTML;
+    };
+
+    function sliderCommonBeforeInit(swiper) {
+        swiper.params.speed = swiper.el.dataset.speed * 1 || swiper.params.speed;
+        swiper.params.autoplay.delay = swiper.el.dataset.autoplayDelay * 1 || swiper.params.autoplay.delay;
+        $currentSliderWrapperElement.css("--_animation-duration", `${swiper.params.speed}ms`);
+    };
+    function indicatorUpdate(swiper){
+        const tabsElementInfo = $currentSliderTabsElement.get(0).getBoundingClientRect();
+        const activeTabButtonInfo = swiper.pagination.bullets[swiper.realIndex].getBoundingClientRect();
+        $currentSliderTabsElement.css("--_indicator-width", `${activeTabButtonInfo.width}px`);
+        $currentSliderTabsElement.css("--_indicator-position-left", `${activeTabButtonInfo.left - tabsElementInfo.left}px`);
+    };
+    function tabsButtonUpdate(swiper){
+        $currentSliderTabsButtonElement.removeClass('active');
+        $currentSliderTabsButtonElement.eq(swiper.realIndex).addClass('active');
+    }
+
+    // For Mobile
+    matchMediaQuery('(max-width: 767px)', function() {
+        new Swiper($currentSliderElement.get(0), {
+            ...sliderCommonOptions,
+            spaceBetween: 32,
+            pagination: {
+                clickable: true,
+                el: $currentSliderPaginationElement.get(0),
             },
-        },
-        autoplay: {
-            delay: 3000,
-            disableOnInteraction: false,
-        },
-        on: {
-            beforeInit: function (swiper) {
-                swiper.params.speed = swiper.el.dataset.speed * 1 || swiper.params.speed;
-                swiper.params.autoplay.delay = swiper.el.dataset.autoplayDelay * 1 || swiper.params.autoplay.delay;
-                $currentSliderWrapperElement.css("--_animation-duration", `${swiper.params.speed}ms`);
+            on: {
+                beforeInit: sliderCommonBeforeInit,
+                init: tabsButtonUpdate,
+                resize: function(){
+                    if (window.innerWidth > 767) location.reload();
+                },
+                realIndexChange: tabsButtonUpdate,
             },
-            init: function (swiper) {
-                indicatorUpdate(swiper);
+        });
+    });
+
+    // For Desktop
+    matchMediaQuery('(min-width: 768px)', function() {
+        new Swiper($currentSliderElement.get(0), {
+            ...sliderCommonOptions,
+            virtualTranslate: true,
+            pagination: {
+                clickable: true,
+                el: $currentSliderTabsElement.get(0),
+                renderBullet: (bulletIndex, className)=> {
+                    $currentSliderTabsButtonElement.eq(bulletIndex).addClass(className);
+                    return $currentSliderTabsButtonElement[bulletIndex].outerHTML;
+                },
             },
-            resize: function (swiper) {
-                indicatorUpdate(swiper);
-            },
-            realIndexChange: function (swiper) {
-                indicatorUpdate(swiper);
-            },
-        }
+            on: {
+                beforeInit: sliderCommonBeforeInit,
+                init: function (swiper) {
+                    indicatorUpdate(swiper);
+                },
+                resize: function (swiper) {
+                    indicatorUpdate(swiper);
+                    if (window.innerWidth < 768) location.reload();
+                },
+                realIndexChange: indicatorUpdate,
+            }
+        });
     });
 });
